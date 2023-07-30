@@ -1,10 +1,7 @@
 from datetime import datetime, timedelta
 def get_birthdays_per_week(users):
-    monday_birthdays = []
-    tuesday_birthdays = []
-    wednesday_birthdays = []
-    thursday_birthdays = []
-    friday_birthdays = []
+    weekdays = {i: [] for i in range(7)}
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     current_datetime = datetime.now()
     current_date = current_datetime.date()
@@ -14,7 +11,9 @@ def get_birthdays_per_week(users):
 
     delta = timedelta(days=1)
     dates = []
-    week_birthdays = []
+
+    if current_date.weekday() == 0:
+            current_date = current_date - timedelta(days=2)
 
     while current_date <= end_of_period:
         dates.append(current_date.isoformat())
@@ -24,33 +23,17 @@ def get_birthdays_per_week(users):
         name = colleague.get('name')
         birthday = colleague.get('birthday')
         current_birthday = birthday.replace(year=current_year).date()
-        current_birthday_weekday = current_birthday.weekday()
 
         if str(current_birthday) in dates:
-            week_birthdays.append(current_birthday)
+            weekday = current_birthday.weekday()
+            if weekday in [5, 6]:
+                weekday = 0
+            weekdays[weekday].append(name)
 
-            if current_birthday_weekday==1:
-                tuesday_birthdays.append(name)
-            elif current_birthday_weekday==2:
-                wednesday_birthdays.append(name)
-            elif current_birthday_weekday==3:
-                thursday_birthdays.append(name)
-            elif current_birthday_weekday==4:
-                friday_birthdays.append(name)
-            else:
-                monday_birthdays.append(name)
-
-    monday_birthdays_str = ', '.join(monday_birthdays)
-    tuesday_birthdays_str = ', '.join(tuesday_birthdays)
-    wednesday_birthdays_str = ', '.join(wednesday_birthdays)
-    thursday_birthdays = ', '.join(thursday_birthdays)
-    friday_birthdays = ', '.join(friday_birthdays)
-
-    print(f'Do not forget to congratulate your colleagues:\nHave birthdays on Monday: {monday_birthdays_str}.'
-          f'\nHave birthdays on Tuesday: {tuesday_birthdays_str}'
-          f'\nHave birthdays on Wednesday: {wednesday_birthdays_str}'
-          f'\nHave birthdays on Thursday: {thursday_birthdays}'
-          f'\nHave birthdays on Friday: {friday_birthdays}')
+    for day in days:
+        if 0 <= days.index(day) <= 4:
+            i = days.index(day)
+            print(f'{day}: {", ".join(weekdays.get(i))}')
 
 # LIST OF BIRTHDAYS FOR CHECK
 colleagues_birthdays = [
